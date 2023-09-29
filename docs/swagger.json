@@ -1,0 +1,65 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "cotizaciones del dolar",
+        "title": "ws-money",
+        "contact": {
+            "name": "dusk",
+            "email": "brendasanchez9310@gmail.com"
+        }
+    },
+    "paths": {
+        "/v1/dollar": {
+            "get": {
+                "description": "get dollars by param web",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dollar"
+                ],
+                "summary": "Consigue los tipos de cambio del dolar",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/dto.Price"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "404": {
+                        "description": "Not Found"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "dto.Price": {
+            "type": "object",
+            "properties": {
+                "label": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "externalDocs": {
+        "description": "github",
+        "url": "https://github.com/brendsanchez"
+    }
+}

@@ -1,0 +1,42 @@
+definitions:
+  dto.Price:
+    properties:
+      label:
+        type: string
+      value:
+        type: string
+    type: object
+externalDocs:
+  description: github
+  url: https://github.com/brendsanchez
+info:
+  contact:
+    email: brendasanchez9310@gmail.com
+    name: dusk
+  description: cotizaciones del dolar
+  title: ws-money
+paths:
+  /v1/dollar:
+    get:
+      consumes:
+      - application/json
+      description: get dollars by param web
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/dto.Price'
+            type: array
+        "400":
+          description: Bad Request
+        "404":
+          description: Not Found
+        "500":
+          description: Internal Server Error
+      summary: Consigue los tipos de cambio del dolar
+      tags:
+      - dollar
+swagger: "2.0"
