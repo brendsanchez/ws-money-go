@@ -1,9 +1,12 @@
 package dto
 
+import "time"
+
 type Dollar struct {
-	Name string
-	Buy  *Price `json:"buy,omitempty"`
-	Sell *Price `json:"sell,omitempty"`
+	Name      string
+	Buy       *Price    `json:"buy,omitempty"`
+	Sell      *Price    `json:"sell,omitempty"`
+	Timestamp time.Time `json:"timestamp,omitempty"`
 }
 
 type Price struct {
