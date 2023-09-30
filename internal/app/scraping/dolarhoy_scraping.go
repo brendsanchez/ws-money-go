@@ -22,24 +22,27 @@ func NewDolarHoyWS(route string) app.Dollar {
 func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 	c := colly.NewCollector()
 
-	var updatedTime time.Time
+	var updatedTime *time.Time
 	c.OnHTML("div.tile.update", func(el *colly.HTMLElement) {
 		updatedTime = getTimestamp(el.Text)
 	})
 
 	dollarTypes := make([]dto.Dollar, 0, 6)
 	c.OnHTML("div.tile.is-parent.is-7.is-vertical", func(e *colly.HTMLElement) {
+		cant := 1
 		e.ForEach("div.tile.is-child", func(i int, el *colly.HTMLElement) {
 			priceBuy := el.ChildText("div.compra div.val")
 			priceSell := el.ChildText("div.venta div.val")
 
 			dollar := dto.Dollar{
+				Id:        cant,
 				Name:      el.ChildText("a"),
 				Buy:       &dto.Price{Val: util.ConvertToFloat(priceBuy), ValText: priceBuy},
 				Sell:      &dto.Price{Val: util.ConvertToFloat(priceSell), ValText: priceSell},
 				Timestamp: updatedTime,
 			}
 			dollarTypes = append(dollarTypes, dollar)
+			cant++
 		})
 	})
 
@@ -55,14 +58,12 @@ func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 	return &dollarTypes, nil
 }
 
-func getTimestamp(text string) time.Time {
+func getTimestamp(text string) *time.Time {
 	date := strings.Replace(text, "Actualizado el ", "", 1)
-
 	resul, err := time.Parse("02/01/06 03:04 PM", date)
 	if err != nil {
-		logrus.Error("error parse date")
-		return time.Now()
+		logrus.Errorf("error parse date dolar hoy: %s", date)
+		return nil
 	}
-
-	return resul
+	return &resul
 }
