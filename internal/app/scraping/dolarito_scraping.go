@@ -42,6 +42,5 @@ func (hc *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return &dollarTypes, nil
+	return getDollarTypes(dollarTypes)
 }

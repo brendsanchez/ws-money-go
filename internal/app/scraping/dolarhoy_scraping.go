@@ -1,6 +1,7 @@
 package scraping
 
 import (
+	"errors"
 	"fmt"
 	"github.com/brendsanchez/ws-money-go/internal/app"
 	"github.com/brendsanchez/ws-money-go/internal/app/util"
@@ -54,8 +55,7 @@ func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return &dollarTypes, nil
+	return getDollarTypes(dollarTypes)
 }
 
 func getTimestamp(text string) *time.Time {
@@ -66,4 +66,11 @@ func getTimestamp(text string) *time.Time {
 		return nil
 	}
 	return &resul
+}
+
+func getDollarTypes(dollarTypes []dto.Dollar) (*[]dto.Dollar, error) {
+	if len(dollarTypes) < 1 {
+		return nil, errors.New("not found dollars values")
+	}
+	return &dollarTypes, nil
 }
