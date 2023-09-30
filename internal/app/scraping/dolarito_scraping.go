@@ -1,12 +1,43 @@
 package scraping
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
 	"github.com/brendsanchez/ws-money-go/internal/app"
-	"github.com/brendsanchez/ws-money-go/internal/app/util"
 	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/gocolly/colly"
-	"github.com/sirupsen/logrus"
 )
+
+// Define el struct para representar la lista de "quotations"
+type QuotationsList struct {
+	Quotations []Quotation `json:"quotations"`
+}
+
+// Define el struct para representar un elemento de "quotations"
+type Quotation struct {
+	Name      string            `json:"name"`
+	Buy       string            `json:"buy"`
+	Sell      string            `json:"sell"`
+	Timestamp int64             `json:"timestamp"`
+	Variation string            `json:"variation"`
+	Spread    string            `json:"spread"`
+	Volume    map[string]string `json:"volumen"`
+	Extra     ExtraInfo         `json:"extra"`
+}
+
+// Define el struct para representar la información adicional en "extra"
+type ExtraInfo struct {
+	ReferenceBuy1 struct {
+		Name  string  `json:"name"`
+		Price float64 `json:"price"`
+	} `json:"referenceBuy1"`
+
+	ReferenceBuy2 struct {
+		Name  string  `json:"name"`
+		Price float64 `json:"price"`
+	} `json:"referenceBuy2"`
+}
 
 type dolaritoWS struct {
 	route string
@@ -20,27 +51,30 @@ func (hc *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 	c := colly.NewCollector()
 
 	dollarTypes := make([]dto.Dollar, 0, 6)
-	c.OnHTML("div.tile.is-parent.is-7.is-vertical", func(e *colly.HTMLElement) {
-		e.ForEach("div.tile.is-child", func(i int, el *colly.HTMLElement) {
-			priceBuy := el.ChildText("div.compra div.val")
-			priceSell := el.ChildText("div.venta div.val")
-			dollar := dto.Dollar{
-				Name: el.ChildText("a"),
-				Buy:  &dto.Price{Val: util.ConvertToFloat(priceBuy), ValText: priceBuy},
-				Sell: &dto.Price{Val: util.ConvertToFloat(priceSell), ValText: priceSell},
-			}
-			dollarTypes = append(dollarTypes, dollar)
-		})
-		logrus.Debug("RESULT:", dollarTypes)
+	var quotationsList QuotationsList
+
+	// Visita la URL y analiza la respuesta
+	c.OnHTML("script#__NEXT_DATA__", func(e *colly.HTMLElement) {
+		// Obtiene el contenido del elemento <script> con el ID "__NEXT_DATA__"
+		scriptContent := e.Text
+
+		// Decodifica el contenido JSON directamente en el struct quotationsList
+		if err := json.Unmarshal([]byte(scriptContent), &quotationsList); err != nil {
+			fmt.Println("Error al decodificar JSON:", err)
+		}
+
+		// Ahora puedes acceder a la lista de "quotations" y sus elementos
+		for _, quotation := range quotationsList.Quotations {
+			fmt.Println("Nombre:", quotation.Name)
+			fmt.Println("Cotización de compra:", quotation.Buy)
+			fmt.Println("Cotización de venta:", quotation.Sell)
+			// Accede a otros campos según sea necesario
+		}
 	})
 
-	c.OnError(func(r *colly.Response, err error) {
-		logrus.Error("Request URL: ", r.Request.URL, "failed with response:", r, "Error:", err)
-	})
-
-	err := c.Visit(hc.route)
+	err := visitRoute(hc.route, c)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("error visit dolarito")
 	}
 	return getDollarTypes(dollarTypes)
 }

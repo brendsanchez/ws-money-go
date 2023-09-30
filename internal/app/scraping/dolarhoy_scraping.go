@@ -2,13 +2,10 @@ package scraping
 
 import (
 	"errors"
-	"fmt"
 	"github.com/brendsanchez/ws-money-go/internal/app"
 	"github.com/brendsanchez/ws-money-go/internal/app/util"
 	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/gocolly/colly"
-	"github.com/sirupsen/logrus"
-	"strings"
 	"time"
 )
 
@@ -34,7 +31,6 @@ func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 		e.ForEach("div.tile.is-child", func(i int, el *colly.HTMLElement) {
 			priceBuy := el.ChildText("div.compra div.val")
 			priceSell := el.ChildText("div.venta div.val")
-
 			dollar := dto.Dollar{
 				Id:        cant,
 				Name:      el.ChildText("a"),
@@ -47,30 +43,9 @@ func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 		})
 	})
 
-	c.OnError(func(r *colly.Response, err error) {
-		fmt.Println("Request URL:", r.Request.URL, "failed with response:", r, "Error:", err)
-	})
-
-	err := c.Visit(hc.route)
+	err := visitRoute(hc.route, c)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("error visit dolar_hoy")
 	}
 	return getDollarTypes(dollarTypes)
-}
-
-func getTimestamp(text string) *time.Time {
-	date := strings.Replace(text, "Actualizado el ", "", 1)
-	resul, err := time.Parse("02/01/06 03:04 PM", date)
-	if err != nil {
-		logrus.Errorf("error parse date dolar hoy: %s", date)
-		return nil
-	}
-	return &resul
-}
-
-func getDollarTypes(dollarTypes []dto.Dollar) (*[]dto.Dollar, error) {
-	if len(dollarTypes) < 1 {
-		return nil, errors.New("not found dollars values")
-	}
-	return &dollarTypes, nil
 }
