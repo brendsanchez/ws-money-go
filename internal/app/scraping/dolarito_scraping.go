@@ -3,10 +3,12 @@ package scraping
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/brendsanchez/ws-money-go/internal/app"
+	"github.com/brendsanchez/ws-money-go/internal/app/util"
 	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/gocolly/colly"
+	"github.com/sirupsen/logrus"
+	"time"
 )
 
 type Dolarito struct {
@@ -25,7 +27,6 @@ type RealTimeQuotations struct {
 	Quotations map[string]Quotation `json:"quotations"`
 }
 
-// Define el struct para representar un elemento de "quotations"
 type Quotation struct {
 	Name      string `json:"name"`
 	Buy       string `json:"buy"`
@@ -48,24 +49,25 @@ func (hc *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 	c := colly.NewCollector()
 
 	dollarTypes := make([]dto.Dollar, 0, 16)
-	var dolarito Dolarito
 
-	// Visita la URL y analiza la respuesta
 	c.OnHTML("script#__NEXT_DATA__", func(e *colly.HTMLElement) {
-		// Obtiene el contenido del elemento <script> con el ID "__NEXT_DATA__"
-		scriptContent := e.Text
+		jsonData := e.Text
+		var data Dolarito
 
-		// Decodifica el contenido JSON directamente en el struct quotationsList
-		if err := json.Unmarshal([]byte(scriptContent), &dolarito); err != nil {
-			fmt.Println("Error al decodificar JSON:", err)
+		if err := json.Unmarshal([]byte(jsonData), &data); err != nil {
+			logrus.Error("Error al decodificar JSON:", err)
 		}
 
 		// Ahora puedes acceder a la lista de "quotations" y sus elementos
-		for _, quotation := range dolarito.Props.PageProps.RealTimeQuotations.Quotations {
-			fmt.Println("Nombre:", quotation.Name)
-			fmt.Println("Cotización de compra:", quotation.Buy)
-			fmt.Println("Cotización de venta:", quotation.Sell)
-			// Accede a otros campos según sea necesario
+		for _, quotation := range data.Props.PageProps.RealTimeQuotations.Quotations {
+			timestamp := time.Unix(quotation.Timestamp, 0)
+			dollar := dto.Dollar{
+				Name:      quotation.Name,
+				Sell:      &dto.Price{Val: util.ConvertToFloat(quotation.Sell), ValText: util.AddDollarChar(quotation.Sell)},
+				Buy:       &dto.Price{Val: util.ConvertToFloat(quotation.Buy), ValText: util.AddDollarChar(quotation.Buy)},
+				Timestamp: &timestamp,
+			}
+			dollarTypes = append(dollarTypes, dollar)
 		}
 	})
 
