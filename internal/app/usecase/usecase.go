@@ -21,22 +21,23 @@ func (duc *dollarUC) GetPrices(webPage string) dto.DollarResponse[*[]dto.Dollar]
 	moneyFactory := factory.NewMoneyFactory(duc.cfg)
 	dollar, err := moneyFactory.GetFactory(enumPageWeb)
 	if err != nil {
-		return dto.DollarResponse[*[]dto.Dollar]{
-			Message: "error al conseguir el tipo de web page",
-			Code:    500,
-			Data:    nil}
+		return dollarResponseNotFound(err)
 	}
 
 	pricesList, err := dollar.GetPrices()
 	if err != nil {
-		return dto.DollarResponse[*[]dto.Dollar]{
-			Message: err.Error(),
-			Code:    404,
-			Data:    nil}
+		return dollarResponseNotFound(err)
 	}
 
 	return dto.DollarResponse[*[]dto.Dollar]{
 		Message: "success",
 		Code:    200,
 		Data:    pricesList}
+}
+
+func dollarResponseNotFound(err error) dto.DollarResponse[*[]dto.Dollar] {
+	return dto.DollarResponse[*[]dto.Dollar]{
+		Message: err.Error(),
+		Code:    404,
+		Data:    nil}
 }
