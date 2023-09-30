@@ -18,7 +18,7 @@ func NewMoneyFactory(cfg *config.Config) *dollarFactory {
 }
 
 func (f *dollarFactory) GetFactory(pageWeb enums.WebPage) (app.Dollar, error) {
-	logrus.Debug("pageWeb:", pageWeb)
+	logrus.Debugf("pageWeb: %s", pageWeb)
 
 	if pageWeb == enums.DOLAR_HOY {
 		return scraping.NewDolarHoyWS(f.cfg.Route.DolarHoy), nil

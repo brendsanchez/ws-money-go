@@ -3,7 +3,9 @@ package http
 import (
 	"encoding/json"
 	"github.com/brendsanchez/ws-money-go/internal/app"
+	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/sirupsen/logrus"
+	"go/types"
 	"net/http"
 )
 
@@ -30,11 +32,28 @@ func (mh *moneyHandlers) GetPrices() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.Header.Set("Content-Type", "application/json")
 
-		logrus.Info("getting prices by: ", 12345)
+		webPageParam := r.URL.Query().Get("web")
+		if webPageParam == "" {
+			writeResponseNotFound(w, "query param 'web' is required")
+			return
+		}
 
-		response := mh.uc.GetPrices("DOLAR_HOY")
+		logrus.Info("getting prices by: ", webPageParam)
+		response := mh.uc.GetPrices(webPageParam)
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(response.Code)
 		json.NewEncoder(w).Encode(response)
 	}
+}
+
+func writeResponseNotFound(w http.ResponseWriter, message string) {
+	statusCode := http.StatusNotFound
+	logrus.Debug(message, statusCode)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(dto.DollarResponse[types.Nil]{
+		Code:    statusCode,
+		Message: message,
+	})
 }

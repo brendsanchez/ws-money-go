@@ -36,7 +36,7 @@ func (duc *dollarUC) GetPrices(webPage string) dto.DollarResponse[*[]dto.Dollar]
 	}
 
 	return dto.DollarResponse[*[]dto.Dollar]{
-		Message: "",
+		Message: "success",
 		Code:    200,
 		Data:    pricesList}
 }
