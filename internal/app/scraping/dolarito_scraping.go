@@ -58,16 +58,21 @@ func (hc *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 			logrus.Error("Error al decodificar JSON:", err)
 		}
 
-		// Ahora puedes acceder a la lista de "quotations" y sus elementos
+		var timestamp *time.Time
+		cant := 1
 		for _, quotation := range data.Props.PageProps.RealTimeQuotations.Quotations {
-			timestamp := time.Unix(quotation.Timestamp, 0)
+			valTextSell := util.ConvertValText(quotation.Sell)
+			valTextBuy := util.ConvertValText(quotation.Buy)
+			//timestamp = time.Unix(quotation.Timestamp, 0)
 			dollar := dto.Dollar{
+				Id:        cant,
 				Name:      quotation.Name,
-				Sell:      &dto.Price{Val: util.ConvertToFloat(quotation.Sell), ValText: util.AddDollarChar(quotation.Sell)},
-				Buy:       &dto.Price{Val: util.ConvertToFloat(quotation.Buy), ValText: util.AddDollarChar(quotation.Buy)},
-				Timestamp: &timestamp,
+				Sell:      &dto.Price{Val: util.ConvertToFloat(valTextSell), ValText: valTextSell},
+				Buy:       &dto.Price{Val: util.ConvertToFloat(valTextBuy), ValText: valTextBuy},
+				Timestamp: timestamp,
 			}
 			dollarTypes = append(dollarTypes, dollar)
+			cant++
 		}
 	})
 
