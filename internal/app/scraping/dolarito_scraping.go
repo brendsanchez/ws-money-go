@@ -45,7 +45,7 @@ func NewDolaritoWS(route string) app.Dollar {
 	return &dolaritoWS{route: route}
 }
 
-func (hc *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
+func (do *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 	c := colly.NewCollector()
 
 	dollarTypes := make([]dto.Dollar, 0, 16)
@@ -76,7 +76,7 @@ func (hc *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 		}
 	})
 
-	err := visitRoute(hc.route, c)
+	err := visitRoute(do.route, c)
 	if err != nil {
 		return nil, errors.New("error visit dolarito")
 	}
