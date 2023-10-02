@@ -5,6 +5,7 @@ import (
 	"github.com/brendsanchez/ws-money-go/internal/app/factory"
 	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/brendsanchez/ws-money-go/internal/enums"
+	"net/http"
 	"sort"
 )
 
@@ -22,25 +23,21 @@ func (duc *dollarUC) GetPrices(webPage string) dto.DollarResponse[*[]dto.Dollar]
 	moneyFactory := factory.NewMoneyFactory(duc.cfg)
 	dollar, err := moneyFactory.GetFactory(enumPageWeb)
 	if err != nil {
-		return dollarResponseNotFound(err)
+		return dollarResponse(err.Error(), http.StatusNotFound, nil)
 	}
 
 	pricesList, err := dollar.GetPrices()
 	if err != nil {
-		return dollarResponseNotFound(err)
+		return dollarResponse(err.Error(), http.StatusNotFound, nil)
 	}
 
 	sort.Sort(dto.ByName(*pricesList))
-	
-	return dto.DollarResponse[*[]dto.Dollar]{
-		Message: "success",
-		Code:    200,
-		Data:    pricesList}
+	return dollarResponse("success", http.StatusOK, pricesList)
 }
 
-func dollarResponseNotFound(err error) dto.DollarResponse[*[]dto.Dollar] {
+func dollarResponse(message string, code int, data *[]dto.Dollar) dto.DollarResponse[*[]dto.Dollar] {
 	return dto.DollarResponse[*[]dto.Dollar]{
-		Message: err.Error(),
-		Code:    404,
-		Data:    nil}
+		Message: message,
+		Code:    code,
+		Data:    data}
 }
