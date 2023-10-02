@@ -8,6 +8,7 @@ import (
 	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
+	"strings"
 	"time"
 )
 
@@ -56,12 +57,13 @@ func (do *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 
 		if err := json.Unmarshal([]byte(jsonData), &data); err != nil {
 			logrus.Error("Error al decodificar JSON:", err)
+			return
 		}
 
 		var timestamp *time.Time
 		for _, quotation := range data.Props.PageProps.RealTimeQuotations.Quotations {
-			valTextSell := util.ConvertValText(quotation.Sell)
-			valTextBuy := util.ConvertValText(quotation.Buy)
+			valTextSell := convertValText(quotation.Sell)
+			valTextBuy := convertValText(quotation.Buy)
 			timestamp = unixToTimestamp(quotation.Timestamp)
 			dollar := dto.Dollar{
 				Name:      quotation.Name,
@@ -77,7 +79,14 @@ func (do *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 	if err != nil {
 		return nil, errors.New("error visit dolarito")
 	}
-	return getDollarTypes(dollarTypes)
+	return &dollarTypes, nil
+}
+
+func convertValText(value string) string {
+	if value == "" {
+		return value
+	}
+	return "$" + strings.Replace(value, ",", ".", 1)
 }
 
 func unixToTimestamp(value int64) *time.Time {

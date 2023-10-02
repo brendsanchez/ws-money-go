@@ -21,13 +21,6 @@ func TimeZone() *time.Location {
 	return loc
 }
 
-func ConvertValText(value string) string {
-	if value == "" {
-		return ""
-	}
-	return "$" + strings.Replace(value, ",", ".", 1)
-}
-
 func ConvertToFloat(value string) *float64 {
 	result, err := removeDollarChar(value)
 	if err != nil {

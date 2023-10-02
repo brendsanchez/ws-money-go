@@ -58,8 +58,7 @@ func (mh *moneyHandlers) GetPrices() http.HandlerFunc {
 }
 
 func writeResponseError(w http.ResponseWriter, message string, statusCode int) {
-	logrus.Debug(message, statusCode)
-
+	logrus.Error(message, statusCode)
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(dto.DollarResponse[types.Nil]{
 		Code:    statusCode,

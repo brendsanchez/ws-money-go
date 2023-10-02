@@ -6,6 +6,8 @@ import (
 	"github.com/brendsanchez/ws-money-go/internal/app/util"
 	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/gocolly/colly"
+	"github.com/sirupsen/logrus"
+	"strings"
 	"time"
 )
 
@@ -44,5 +46,17 @@ func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 	if err != nil {
 		return nil, errors.New("error visit dolar_hoy")
 	}
-	return getDollarTypes(dollarTypes)
+	return &dollarTypes, nil
+}
+
+func textToTimestamp(text string) *time.Time {
+	date := strings.Replace(text, "Actualizado el ", "", 1)
+	resul, err := time.Parse("02/01/06 03:04 PM", date)
+	if err != nil {
+		logrus.Errorf("error parse date dolar hoy: %s", date)
+		return nil
+	}
+	loc := util.TimeZone()
+	resul = resul.In(loc)
+	return &resul
 }
