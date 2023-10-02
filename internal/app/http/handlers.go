@@ -34,7 +34,7 @@ func (mh *moneyHandlers) GetPrices() http.HandlerFunc {
 
 		webPageParam := r.URL.Query().Get("web")
 		if webPageParam == "" {
-			writeResponse(w, "query param 'web' is required", http.StatusNotFound)
+			writeResponseError(w, "query param 'web' is required", http.StatusNotFound)
 			return
 		}
 
@@ -45,19 +45,19 @@ func (mh *moneyHandlers) GetPrices() http.HandlerFunc {
 
 		responseJSON, err := json.Marshal(response)
 		if err != nil {
-			writeResponse(w, "Failed to marshal JSON", http.StatusInternalServerError)
+			writeResponseError(w, "Failed to marshal JSON", http.StatusInternalServerError)
 			return
 		}
 
 		_, err = w.Write(responseJSON)
 		if err != nil {
-			writeResponse(w, "Failed to write response", http.StatusInternalServerError)
+			writeResponseError(w, "Failed to write response", http.StatusInternalServerError)
 			return
 		}
 	}
 }
 
-func writeResponse(w http.ResponseWriter, message string, statusCode int) {
+func writeResponseError(w http.ResponseWriter, message string, statusCode int) {
 	logrus.Debug(message, statusCode)
 
 	w.WriteHeader(statusCode)
