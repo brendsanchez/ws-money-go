@@ -22,7 +22,7 @@ func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 
 	var updatedTime *time.Time
 	c.OnHTML("div.tile.update", func(el *colly.HTMLElement) {
-		updatedTime = getTimestamp(el.Text)
+		updatedTime = textToTimestamp(el.Text)
 	})
 
 	dollarTypes := make([]dto.Dollar, 0, 6)

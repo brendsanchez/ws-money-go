@@ -2,6 +2,7 @@ package scraping
 
 import (
 	"errors"
+	"github.com/brendsanchez/ws-money-go/internal/app/util"
 	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/gocolly/colly"
 	"github.com/sirupsen/logrus"
@@ -17,13 +18,15 @@ func visitRoute(route string, c *colly.Collector) error {
 	return c.Visit(route)
 }
 
-func getTimestamp(text string) *time.Time {
+func textToTimestamp(text string) *time.Time {
 	date := strings.Replace(text, "Actualizado el ", "", 1)
 	resul, err := time.Parse("02/01/06 03:04 PM", date)
 	if err != nil {
 		logrus.Errorf("error parse date dolar hoy: %s", date)
 		return nil
 	}
+	loc := util.TimeZone()
+	resul = resul.In(loc)
 	return &resul
 }
 

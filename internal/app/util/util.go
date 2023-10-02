@@ -1,9 +1,25 @@
 package util
 
 import (
+	"github.com/sirupsen/logrus"
+	"os"
 	"strconv"
 	"strings"
+	"time"
 )
+
+func TimeZone() *time.Location {
+	value := os.Getenv("TZ")
+	if value == "" {
+		value = "America/Buenos_Aires"
+	}
+
+	loc, err := time.LoadLocation(value)
+	if err != nil {
+		logrus.Fatal(err)
+	}
+	return loc
+}
 
 func ConvertValText(value string) string {
 	if value == "" {

@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/brendsanchez/ws-money-go/internal/app/util"
 	"github.com/sirupsen/logrus"
 	"time"
 )
@@ -36,14 +37,6 @@ func jsonFormatter() logrus.Formatter {
 			TimestampFormat: "2006-01-02 15:04:05",
 			PrettyPrint:     false,
 		},
-		Location: timeZone(),
+		Location: util.TimeZone(),
 	}
-}
-
-func timeZone() *time.Location {
-	loc, err := time.LoadLocation("America/Buenos_Aires")
-	if err != nil {
-		logrus.Fatal(err)
-	}
-	return loc
 }

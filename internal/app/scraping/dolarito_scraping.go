@@ -62,7 +62,7 @@ func (do *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 		for _, quotation := range data.Props.PageProps.RealTimeQuotations.Quotations {
 			valTextSell := util.ConvertValText(quotation.Sell)
 			valTextBuy := util.ConvertValText(quotation.Buy)
-			timestamp = timestampToUnix(quotation.Timestamp)
+			timestamp = unixToTimestamp(quotation.Timestamp)
 			dollar := dto.Dollar{
 				Name:      quotation.Name,
 				Sell:      &dto.Price{Val: util.ConvertToFloat(valTextSell), ValText: valTextSell},
@@ -80,7 +80,7 @@ func (do *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 	return getDollarTypes(dollarTypes)
 }
 
-func timestampToUnix(value int64) *time.Time {
+func unixToTimestamp(value int64) *time.Time {
 	timestampSeconds := value / 1000
 	timestampNanoseconds := (value % 1000) * 1e6
 	unix := time.Unix(timestampSeconds, timestampNanoseconds)
