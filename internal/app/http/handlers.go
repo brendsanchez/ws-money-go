@@ -34,23 +34,32 @@ func (mh *moneyHandlers) GetPrices() http.HandlerFunc {
 
 		webPageParam := r.URL.Query().Get("web")
 		if webPageParam == "" {
-			writeResponseNotFound(w, "query param 'web' is required")
+			writeResponse(w, "query param 'web' is required", http.StatusNotFound)
 			return
 		}
 
 		logrus.Info("getting prices by: ", webPageParam)
 		response := mh.uc.GetPrices(webPageParam)
+
 		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(response.Code)
-		json.NewEncoder(w).Encode(response)
+
+		responseJSON, err := json.Marshal(response)
+		if err != nil {
+			writeResponse(w, "Failed to marshal JSON", http.StatusInternalServerError)
+			return
+		}
+
+		_, err = w.Write(responseJSON)
+		if err != nil {
+			writeResponse(w, "Failed to write response", http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
-func writeResponseNotFound(w http.ResponseWriter, message string) {
-	statusCode := http.StatusNotFound
+func writeResponse(w http.ResponseWriter, message string, statusCode int) {
 	logrus.Debug(message, statusCode)
 
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(statusCode)
 	json.NewEncoder(w).Encode(dto.DollarResponse[types.Nil]{
 		Code:    statusCode,
