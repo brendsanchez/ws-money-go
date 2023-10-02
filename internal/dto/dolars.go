@@ -3,12 +3,17 @@ package dto
 import "time"
 
 type Dollar struct {
-	Id        int `json:"id" example:"1"`
 	Name      string
 	Buy       *Price     `json:"buy,omitempty"`
 	Sell      *Price     `json:"sell,omitempty"`
 	Timestamp *time.Time `json:"timestamp,omitempty"`
 }
+
+type ByName []Dollar
+
+func (a ByName) Len() int           { return len(a) }
+func (a ByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a ByName) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
 type Price struct {
 	ValText string   `json:"valText,omitempty"`

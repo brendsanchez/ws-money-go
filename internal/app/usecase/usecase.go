@@ -5,6 +5,7 @@ import (
 	"github.com/brendsanchez/ws-money-go/internal/app/factory"
 	"github.com/brendsanchez/ws-money-go/internal/dto"
 	"github.com/brendsanchez/ws-money-go/internal/enums"
+	"sort"
 )
 
 type dollarUC struct {
@@ -29,6 +30,8 @@ func (duc *dollarUC) GetPrices(webPage string) dto.DollarResponse[*[]dto.Dollar]
 		return dollarResponseNotFound(err)
 	}
 
+	sort.Sort(dto.ByName(*pricesList))
+	
 	return dto.DollarResponse[*[]dto.Dollar]{
 		Message: "success",
 		Code:    200,

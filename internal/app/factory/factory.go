@@ -18,11 +18,12 @@ func NewMoneyFactory(cfg *config.Config) *dollarFactory {
 }
 
 func (f *dollarFactory) GetFactory(pageWeb enums.WebPage) (app.Dollar, error) {
-	logrus.Debug("choosing factory..")
 	if pageWeb == enums.DOLAR_HOY {
+		logrus.Debug("choosing factory dolar hoy")
 		return scraping.NewDolarHoyWS(f.cfg.Route.DolarHoy), nil
 	}
 	if pageWeb == enums.DOLARITO {
+		logrus.Debug("choosing factory dolarito")
 		return scraping.NewDolaritoWS(f.cfg.Route.Dolarito), nil
 	}
 	return nil, errors.New("not found web=" + string(pageWeb))
