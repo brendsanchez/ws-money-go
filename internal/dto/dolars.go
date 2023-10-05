@@ -3,9 +3,9 @@ package dto
 import "time"
 
 type Dollar struct {
-	Name      string
-	Buy       *Price     `json:"buy,omitempty"`
-	Sell      *Price     `json:"sell,omitempty"`
+	Name      string     `json:"name,omitempty"`
+	Buy       *Price     `json:"buy"`
+	Sell      *Price     `json:"sell"`
 	Timestamp *time.Time `json:"timestamp,omitempty"`
 }
 
@@ -16,8 +16,8 @@ func (a ByName) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a ByName) Less(i, j int) bool { return a[i].Name < a[j].Name }
 
 type Price struct {
-	ValText string   `json:"valText,omitempty"`
-	Val     *float64 `json:"val,omitempty"`
+	ValueText string   `json:"valueText,omitempty"`
+	Value     *float64 `json:"value,omitempty"`
 }
 
 type DollarResponse[T any] struct {

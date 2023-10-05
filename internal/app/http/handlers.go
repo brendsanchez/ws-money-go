@@ -24,8 +24,8 @@ func NewMoneyHandlers(uc app.UseCase) app.Handlers {
 // @Tags dollar
 // @Accept  json
 // @Produce  json
-// @Query web path string true page web example(DOLAR_HOY)
-// @Success 200  {object}  []dto.Price
+// @Param web query string true "pages to ws" example(DOLAR_HOY)
+// @Success 200 {object} dto.DollarResponse[dto.Dollar]
 // @Failure 400,404,500
 // @Router /v1/dollar [get]
 func (mh *moneyHandlers) GetPrices() http.HandlerFunc {
@@ -34,7 +34,7 @@ func (mh *moneyHandlers) GetPrices() http.HandlerFunc {
 
 		webPageParam := r.URL.Query().Get("web")
 		if webPageParam == "" {
-			writeResponseError(w, "query param 'web' is required", http.StatusNotFound)
+			writeResponseError(w, "query param 'web' is required ", http.StatusNotFound)
 			return
 		}
 

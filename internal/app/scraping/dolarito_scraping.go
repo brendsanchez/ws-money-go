@@ -67,8 +67,8 @@ func (do *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 			timestamp = unixToTimestamp(quotation.Timestamp)
 			dollar := dto.Dollar{
 				Name:      quotation.Name,
-				Sell:      &dto.Price{Val: util.ConvertToFloat(valTextSell), ValText: valTextSell},
-				Buy:       &dto.Price{Val: util.ConvertToFloat(valTextBuy), ValText: valTextBuy},
+				Sell:      &dto.Price{Value: util.ConvertToFloat(valTextSell), ValueText: valTextSell},
+				Buy:       &dto.Price{Value: util.ConvertToFloat(valTextBuy), ValueText: valTextBuy},
 				Timestamp: timestamp,
 			}
 			dollarTypes = append(dollarTypes, dollar)

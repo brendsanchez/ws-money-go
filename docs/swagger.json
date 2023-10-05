@@ -22,44 +22,39 @@
                     "dollar"
                 ],
                 "summary": "Consigue los tipos de cambio del dolar",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "DOLAR_HOY",
+                        "description": "pages to ws",
+                        "name": "web",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/dto.Price"
-                            }
+                            "$ref": "#/definitions/http.dollarResponseList"
                         }
                     },
                     "400": {
-                        "description": "Bad Request"
+                        "description": ""
                     },
                     "404": {
-                        "description": "Not Found"
+                        "description": ""
                     },
                     "500": {
-                        "description": "Internal Server Error"
+                        "description": ""
                     }
                 }
             }
         }
     },
     "definitions": {
-        "dto.Price": {
-            "type": "object",
-            "properties": {
-                "label": {
-                    "type": "string"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
+        "http.dollarResponseList": {
+            "type": "object"
         }
-    },
-    "externalDocs": {
-        "description": "github",
-        "url": "https://github.com/brendsanchez"
     }
 }
