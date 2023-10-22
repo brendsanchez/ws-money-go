@@ -46,7 +46,39 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/http.dollarResponseList"
+                            "$ref": "#/definitions/dto.DollarResponse-dto_Dollar"
+                        }
+                    },
+                    "400": {
+                        "description": ""
+                    },
+                    "404": {
+                        "description": ""
+                    },
+                    "500": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/v1/pages": {
+            "get": {
+                "description": "get pages",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "dollar"
+                ],
+                "summary": "Consigue las paginas donde traera los precios",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dto.DollarResponse-dto_Page"
                         }
                     },
                     "400": {
@@ -63,8 +95,66 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "http.dollarResponseList": {
-            "type": "object"
+        "dto.DollarResponse-dto_Dollar": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "buy": {
+                            "$ref": "#/definitions/dto.Price"
+                        },
+                        "name": {
+                            "type": "string"
+                        },
+                        "sell": {
+                            "$ref": "#/definitions/dto.Price"
+                        },
+                        "timestamp": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.DollarResponse-dto_Page": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "integer"
+                },
+                "data": {
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "string"
+                        },
+                        "route": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "dto.Price": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "number"
+                },
+                "valueText": {
+                    "type": "string"
+                }
+            }
         }
     }
 }`

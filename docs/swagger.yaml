@@ -1,5 +1,42 @@
 definitions:
-  http.dollarResponseList:
+  dto.DollarResponse-dto_Dollar:
+    properties:
+      code:
+        type: integer
+      data:
+        properties:
+          buy:
+            $ref: '#/definitions/dto.Price'
+          name:
+            type: string
+          sell:
+            $ref: '#/definitions/dto.Price'
+          timestamp:
+            type: string
+        type: object
+      message:
+        type: string
+    type: object
+  dto.DollarResponse-dto_Page:
+    properties:
+      code:
+        type: integer
+      data:
+        properties:
+          name:
+            type: string
+          route:
+            type: string
+        type: object
+      message:
+        type: string
+    type: object
+  dto.Price:
+    properties:
+      value:
+        type: number
+      valueText:
+        type: string
     type: object
 info:
   contact:
@@ -26,7 +63,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/http.dollarResponseList'
+            $ref: '#/definitions/dto.DollarResponse-dto_Dollar'
         "400":
           description: ""
         "404":
@@ -34,6 +71,27 @@ paths:
         "500":
           description: ""
       summary: Consigue los tipos de cambio del dolar
+      tags:
+      - dollar
+  /v1/pages:
+    get:
+      consumes:
+      - application/json
+      description: get pages
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/dto.DollarResponse-dto_Page'
+        "400":
+          description: ""
+        "404":
+          description: ""
+        "500":
+          description: ""
+      summary: Consigue las paginas donde traera los precios
       tags:
       - dollar
 swagger: "2.0"

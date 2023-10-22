@@ -57,6 +57,37 @@ func (mh *moneyHandlers) GetPrices() http.HandlerFunc {
 	}
 }
 
+// GetPages ... Get dollar pages
+// @Summary Consigue las paginas donde traera los precios
+// @Description get pages
+// @Tags dollar
+// @Accept  json
+// @Produce  json
+// @Success 200 {object} dto.DollarResponse[dto.Page]
+// @Failure 400,404,500
+// @Router /v1/pages [get]
+func (mh *moneyHandlers) GetPages() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		r.Header.Set("Content-Type", "application/json")
+
+		response := mh.uc.GetPages()
+
+		w.Header().Set("Content-Type", "application/json")
+
+		responseJSON, err := json.Marshal(response)
+		if err != nil {
+			writeResponseError(w, "Failed to marshal JSON", http.StatusInternalServerError)
+			return
+		}
+
+		_, err = w.Write(responseJSON)
+		if err != nil {
+			writeResponseError(w, "Failed to write response", http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
 func writeResponseError(w http.ResponseWriter, message string, statusCode int) {
 	logrus.Error(message, statusCode)
 	w.WriteHeader(statusCode)

@@ -8,7 +8,7 @@ import (
 
 type Config struct {
 	App    app
-	Route  route
+	Routes []route
 	Server server
 	Logger logger
 }
@@ -20,8 +20,8 @@ type app struct {
 }
 
 type route struct {
-	Dolarito string
-	DolarHoy string
+	Name string
+	Uri  string
 }
 
 type server struct {
@@ -45,7 +45,9 @@ func Load() (*Config, error) {
 	}
 	config.App.Name = "ws-money"
 	config.App.Version = "1.0.0"
-	config.Route.Dolarito = "https://www.dolarito.ar/"
-	config.Route.DolarHoy = "https://dolarhoy.com/"
+	config.Routes = []route{
+		{Name: "Dolar Hoy", Uri: "https://dolarhoy.com/"},
+		{Name: "Dolarito", Uri: "https://www.dolarito.ar/"},
+	}
 	return &config, nil
 }

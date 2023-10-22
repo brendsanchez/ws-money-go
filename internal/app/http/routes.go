@@ -12,6 +12,7 @@ import (
 
 func MapDollarRoutes(handler *http.ServeMux, handlers app.Handlers) {
 	handler.HandleFunc("/v1/dollar", handlers.GetPrices())
+	handler.HandleFunc("/v1/pages", handlers.GetPages())
 }
 
 func MapManageRoutes(handler *http.ServeMux) {

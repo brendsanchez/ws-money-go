@@ -25,27 +25,43 @@ func (duc *dollarUC) GetPrices(webPage string) dto.DollarResponse[*[]dto.Dollar]
 	dollar, err := moneyFactory.GetFactory(enumPageWeb)
 	if err != nil {
 		logrus.Error(err.Error())
-		return dollarResponse(err.Error(), http.StatusNotFound, nil)
+		return dollarResponse[*[]dto.Dollar](err.Error(), http.StatusNotFound, nil)
 	}
 
 	pricesList, err := dollar.GetPrices()
 	if err != nil {
 		logrus.Errorf("error scraping %s", err.Error())
-		return dollarResponse(err.Error(), http.StatusInternalServerError, nil)
+		return dollarResponse[*[]dto.Dollar](err.Error(), http.StatusInternalServerError, nil)
 	}
 
 	if len(*pricesList) < 1 {
 		logrus.Error("not found dollars values", enumPageWeb)
-		return dollarResponse("not found dollars values", http.StatusNotFound, nil)
+		return dollarResponse[*[]dto.Dollar]("not found dollars values", http.StatusNotFound, nil)
 	}
 
 	sort.Sort(dto.ByName(*pricesList))
 	return dollarResponse("success", http.StatusOK, pricesList)
 }
 
-func dollarResponse(message string, code int, data *[]dto.Dollar) dto.DollarResponse[*[]dto.Dollar] {
-	return dto.DollarResponse[*[]dto.Dollar]{
+func (duc *dollarUC) GetPages() dto.DollarResponse[*[]dto.Page] {
+	routes := duc.cfg.Routes
+	if len(routes) < 1 {
+		logrus.Error("error al conseguir las paginas")
+		return dollarResponse[*[]dto.Page]("pages not found", http.StatusNotFound, nil)
+	}
+
+	var pages []dto.Page
+	for _, route := range routes {
+		pages = append(pages, dto.Page{Name: route.Name, Route: route.Uri})
+	}
+
+	return dollarResponse("success", http.StatusOK, &pages)
+}
+
+func dollarResponse[T any](message string, code int, data T) dto.DollarResponse[T] {
+	return dto.DollarResponse[T]{
 		Message: message,
 		Code:    code,
-		Data:    data}
+		Data:    data,
+	}
 }

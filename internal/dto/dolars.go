@@ -9,6 +9,11 @@ type Dollar struct {
 	Timestamp *time.Time `json:"timestamp,omitempty"`
 }
 
+type Page struct {
+	Name  string
+	Route string
+}
+
 type ByName []Dollar
 
 func (a ByName) Len() int           { return len(a) }
