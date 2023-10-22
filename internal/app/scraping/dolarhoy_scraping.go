@@ -22,9 +22,9 @@ func NewDolarHoyWS(route string) app.Dollar {
 func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 	c := colly.NewCollector()
 
-	var updatedTime *time.Time
+	var updatedDate *time.Time
 	c.OnHTML("div.tile.update", func(el *colly.HTMLElement) {
-		updatedTime = textToTimestamp(el.Text)
+		updatedDate = textToTimestamp(el.Text)
 	})
 
 	dollarTypes := make([]dto.Dollar, 0, 6)
@@ -33,10 +33,11 @@ func (hc *dolarHoyWS) GetPrices() (*[]dto.Dollar, error) {
 			priceBuy := el.ChildText("div.compra div.val")
 			priceSell := el.ChildText("div.venta div.val")
 			dollar := dto.Dollar{
-				Name:      el.ChildText("a"),
+				Name:      util.CapitalizeWords(el.ChildText("a")),
 				Buy:       &dto.Price{Value: util.ConvertToFloat(priceBuy), ValueText: priceBuy},
 				Sell:      &dto.Price{Value: util.ConvertToFloat(priceSell), ValueText: priceSell},
-				Timestamp: updatedTime,
+				Date:      updatedDate,
+				Timestamp: updatedDate.Unix(),
 			}
 			dollarTypes = append(dollarTypes, dollar)
 		})
@@ -57,6 +58,6 @@ func textToTimestamp(text string) *time.Time {
 		return nil
 	}
 	loc := util.TimeZone()
-	resul = resul.In(loc)
+	resul = resul.Add(3 * time.Hour).In(loc)
 	return &resul
 }

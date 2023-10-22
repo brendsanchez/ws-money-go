@@ -6,7 +6,8 @@ type Dollar struct {
 	Name      string     `json:"name,omitempty"`
 	Buy       *Price     `json:"buy"`
 	Sell      *Price     `json:"sell"`
-	Timestamp *time.Time `json:"timestamp,omitempty"`
+	Date      *time.Time `json:"date,omitempty"`
+	Timestamp int64      `json:"timestamp,omitempty"`
 }
 
 type Page struct {
