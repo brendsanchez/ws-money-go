@@ -52,7 +52,12 @@ func (duc *dollarUC) GetPages() dto.DollarResponse[*[]dto.Page] {
 
 	var pages []dto.Page
 	for _, route := range routes {
-		pages = append(pages, dto.Page{Name: route.Name, Route: route.Uri})
+		pages = append(pages, dto.Page{
+			Id:    route.Id,
+			Name:  route.Name,
+			Route: route.Uri,
+			Image: route.ImageUri,
+		})
 	}
 
 	return dollarResponse("success", http.StatusOK, &pages)

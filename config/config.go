@@ -2,7 +2,9 @@ package config
 
 import (
 	"context"
+	"github.com/brendsanchez/ws-money-go/internal/enums"
 	"github.com/sethvargo/go-envconfig"
+	"os"
 	"time"
 )
 
@@ -20,8 +22,10 @@ type app struct {
 }
 
 type route struct {
-	Name string
-	Uri  string
+	Id       string
+	Name     string
+	Uri      string
+	ImageUri string
 }
 
 type server struct {
@@ -46,8 +50,8 @@ func Load() (*Config, error) {
 	config.App.Name = "ws-money"
 	config.App.Version = "1.0.0"
 	config.Routes = []route{
-		{Name: "Dolar Hoy", Uri: "https://dolarhoy.com/"},
-		{Name: "Dolarito", Uri: "https://www.dolarito.ar/"},
+		{Id: string(enums.DOLAR_HOY), Name: "Dolar Hoy", Uri: "https://dolarhoy.com/", ImageUri: os.Getenv("DOLAR_HOY_IMG")},
+		{Id: string(enums.DOLARITO), Name: "Dolarito", Uri: "https://www.dolarito.ar/", ImageUri: os.Getenv("DOLARITO_IMG")},
 	}
 	return &config, nil
 }

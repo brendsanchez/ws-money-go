@@ -132,6 +132,9 @@ const docTemplate = `{
                 "data": {
                     "type": "object",
                     "properties": {
+                        "image": {
+                            "type": "string"
+                        },
                         "name": {
                             "type": "string"
                         },

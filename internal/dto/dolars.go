@@ -10,8 +10,10 @@ type Dollar struct {
 }
 
 type Page struct {
-	Name  string
-	Route string
+	Id    string `json:"id"`
+	Name  string `json:"name"`
+	Route string `json:"route"`
+	Image string `json:"image"`
 }
 
 type ByName []Dollar
