@@ -48,7 +48,7 @@ func NewDolaritoWS(route string) app.Dollar {
 func (do *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 	c := colly.NewCollector()
 
-	dollarTypes := make([]dto.Dollar, 0, 18)
+	dollarTypes := make([]dto.Dollar, 0)
 
 	c.OnHTML("script#__NEXT_DATA__", func(e *colly.HTMLElement) {
 		jsonData := e.Text
@@ -61,17 +61,19 @@ func (do *dolaritoWS) GetPrices() (*[]dto.Dollar, error) {
 
 		var dateQuotation *time.Time
 		for _, quotation := range data.Props.PageProps.RealTimeQuotations.Quotations {
-			valTextSell := util.ConvertValText(quotation.Sell)
-			valTextBuy := util.ConvertValText(quotation.Buy)
-			dateQuotation = unixToTimestamp(quotation.Timestamp)
-			dollar := dto.Dollar{
-				Name:      util.CapitalizeWords(quotation.Name),
-				Sell:      &dto.Price{Value: util.ConvertToFloat(valTextSell), ValueText: valTextSell},
-				Buy:       &dto.Price{Value: util.ConvertToFloat(valTextBuy), ValueText: valTextBuy},
-				Date:      dateQuotation,
-				Timestamp: quotation.Timestamp,
+			if quotation.Name != "" {
+				valTextSell := util.ConvertValText(quotation.Sell)
+				valTextBuy := util.ConvertValText(quotation.Buy)
+				dateQuotation = unixToTimestamp(quotation.Timestamp)
+				dollar := dto.Dollar{
+					Name:      util.CapitalizeWords(quotation.Name),
+					Sell:      &dto.Price{Value: util.ConvertToFloat(valTextSell), ValueText: valTextSell},
+					Buy:       &dto.Price{Value: util.ConvertToFloat(valTextBuy), ValueText: valTextBuy},
+					Date:      dateQuotation,
+					Timestamp: quotation.Timestamp,
+				}
+				dollarTypes = append(dollarTypes, dollar)
 			}
-			dollarTypes = append(dollarTypes, dollar)
 		}
 	})
 
